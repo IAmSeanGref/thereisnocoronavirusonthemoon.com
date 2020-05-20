@@ -64,14 +64,14 @@ let main = () => {
     var virusSpriteMap = new THREE.TextureLoader().load( "assets/sprites/coronavirus.png" );
     var virusMaterial = new THREE.SpriteMaterial( { 
         map: virusSpriteMap,
-        depthTest: false,
+        // depthTest: false,
         transparent: true
     } );
 
     var moon = new THREE.Sprite( moonMaterial );
     moon.scale.set(10000, 10000, 1);
     moon.position.set(0, -5500, 1000);
-    moon.renderOrder = 999;
+    // moon.renderOrder = 999;
 
     mainScene.add(moon);
 
@@ -98,6 +98,29 @@ let main = () => {
         viruses.push(virus);
         mainScene.add(virusObject);
     }
+
+    mainScene.background = new THREE.Color(0.5, 0.5, 0.5)
+
+    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+    mainScene.add( light );
+    
+    modelLoader.load(
+        'assets/moon_base/moon_base.gltf',
+        function (object) {
+            console.log("Loading moon-base complete!");
+            console.log(object);
+            var moonBase = object.scene
+            moonBase.position.set(0, -700, 1200)
+            moonBase.scale.set(250,250,250)
+            // moonBase.children[0].material = new THREE.MeshBasicMaterial({
+            //     color: "rgb(255, 0, 0)"
+            // })
+            // moonBase.children[1].material = new THREE.MeshBasicMaterial({
+            //     color: "rgb(255, 0, 0)"
+            // })
+            mainScene.add(moonBase)
+        }
+    )
 
     modelLoader.load(
         'assets/earth_model/13902_Earth_v1_l3.gltf',
