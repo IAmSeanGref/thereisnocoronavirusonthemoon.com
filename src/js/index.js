@@ -71,8 +71,11 @@ let main = () => {
     var moon = new THREE.Sprite( moonMaterial );
     moon.scale.set(10000, 10000, 1);
     moon.position.set(0, -5500, 1000);
-    // moon.renderOrder = 999;
 
+    moon.renderOrder = 999;
+    moon.animate = function(dTime, elapsedTime) {
+        this.material.rotation += THREE.Math.DEG2RAD * -1 * dTime
+    }
     mainScene.add(moon);
 
     var viruses = [];
@@ -92,7 +95,29 @@ let main = () => {
             scaleSpeed: Math.sign(Math.random() - 0.5) * (Math.random() * 2 + 2),
             fadeSpeed: Math.random() * 3 + 0.5,
             origin: new Vector3(x, y, z),
-            initScale: virusObject.scale.clone()
+            initScale: virusObject.scale.clone(),
+            animate: function(dTime, elapsedTime) {
+                var object = this['sceneObject'];
+                var moveSpeed = this['moveSpeed'];
+                var moveMagnitude = this['moveMagnitude']
+                var rotateSpeed = this['rotateSpeed'];
+                var scaleSpeed = this['scaleSpeed'];
+                var fadeSpeed = this['fadeSpeed'];
+                var origin = this['origin'];
+                var initScale = this['initScale'];
+                var newPosition = origin.clone().add(new Vector3(
+                    Math.sin(elapsedTime * moveSpeed),
+                    Math.cos(elapsedTime * moveSpeed),
+                    0
+                ).multiplyScalar(moveMagnitude));
+
+                object.position.set(newPosition.x, newPosition.y, newPosition.z);
+                object.material.rotation += THREE.Math.DEG2RAD * rotateSpeed * dTime;
+                var newScaleValue = Math.abs(Math.sin(elapsedTime * scaleSpeed)) + 0.8;
+                object.scale.set(initScale.x * newScaleValue, initScale.y * newScaleValue, initScale.z);
+                var newFadeValue = 1-Math.abs(Math.sin(elapsedTime * fadeSpeed));
+                object.material.opacity = newFadeValue;
+            }
         }
         console.log(virus['fadeSpeed'])
         viruses.push(virus);
@@ -140,6 +165,9 @@ let main = () => {
                     earth.rotateX(THREE.Math.DEG2RAD * 115)
                     earth.rotateZ(THREE.Math.DEG2RAD * -55)
                     earth.rotateX(THREE.Math.DEG2RAD * 15)
+                    earth.animate = function(dTime, elapsedTime) {
+                        this.rotateZ(THREE.Math.DEG2RAD * -10 * dTime)
+                    }
                     currentScene = mainScene;
                 },
                 undefined,
@@ -167,46 +195,14 @@ let main = () => {
         let elapsedTime = clock.getElapsedTime();
 
         if (resized) {
-            resize()
+            resize();
         }
 
-        if (earth !== null) {
-            earth.rotateZ(THREE.Math.DEG2RAD * -10 * dTime)
-        }
+        currentScene.children.filter(x => x.hasProperty('animate')).forEach(element => {
+            element.animate(dTime, elapsedTime);
+        });
 
-        if (moon !== null) {
-            moon.material.rotation += THREE.Math.DEG2RAD * -1 * dTime
-        }
-
-        for (var i = 0; i < viruses.length; i++) {
-            var virus = viruses[i];
-            if (typeof virus === "undefined" || typeof virus['sceneObject'] === "undefined") {
-                continue;
-            }
-
-            var object = virus['sceneObject'];
-            var moveSpeed = virus['moveSpeed'];
-            var moveMagnitude = virus['moveMagnitude']
-            var rotateSpeed = virus['rotateSpeed'];
-            var scaleSpeed = virus['scaleSpeed'];
-            var fadeSpeed = virus['fadeSpeed'];
-            var origin = virus['origin'];
-            var initScale = virus['initScale'];
-            var newPosition = origin.clone().add(new Vector3(
-                Math.sin(elapsedTime * moveSpeed),
-                Math.cos(elapsedTime * moveSpeed),
-                0
-            ).multiplyScalar(moveMagnitude));
-
-            object.position.set(newPosition.x, newPosition.y, newPosition.z);
-            object.material.rotation += THREE.Math.DEG2RAD * rotateSpeed * dTime;
-            var newScaleValue = Math.abs(Math.sin(elapsedTime * scaleSpeed)) + 0.8;
-            object.scale.set(initScale.x * newScaleValue, initScale.y * newScaleValue, initScale.z);
-            var newFadeValue = 1-Math.abs(Math.sin(elapsedTime * fadeSpeed));
-            object.material.opacity = newFadeValue;
-        }
-
-        renderer.render( currentScene, camera );
+        renderer.render(currentScene, camera);
     }
     animate();
 }
