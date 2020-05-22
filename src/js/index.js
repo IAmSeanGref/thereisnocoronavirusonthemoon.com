@@ -88,7 +88,6 @@ let main = () => {
         virusObject.position.set(x, y, z);
         virusObject.renderOrder = z;
         var virus = {
-            sceneObject: virusObject,
             moveSpeed: Math.sign(Math.random() - 0.5) * (Math.random() * 4 + 4),
             moveMagnitude: Math.random() * 30 + 30,
             rotateSpeed: Math.sign(Math.random() - 0.5) * (Math.random() * 2 + 2),
@@ -96,28 +95,29 @@ let main = () => {
             fadeSpeed: Math.random() * 3 + 0.5,
             origin: new Vector3(x, y, z),
             initScale: virusObject.scale.clone(),
-            animate: function(dTime, elapsedTime) {
-                var object = this['sceneObject'];
-                var moveSpeed = this['moveSpeed'];
-                var moveMagnitude = this['moveMagnitude']
-                var rotateSpeed = this['rotateSpeed'];
-                var scaleSpeed = this['scaleSpeed'];
-                var fadeSpeed = this['fadeSpeed'];
-                var origin = this['origin'];
-                var initScale = this['initScale'];
-                var newPosition = origin.clone().add(new Vector3(
-                    Math.sin(elapsedTime * moveSpeed),
-                    Math.cos(elapsedTime * moveSpeed),
-                    0
-                ).multiplyScalar(moveMagnitude));
+        }
+        virusObject.virus = virus;
+        virusObject.animate = function(dTime, elapsedTime) {
+            var object = this['virus'];
+            var moveSpeed = object['moveSpeed'];
+            var moveMagnitude = object['moveMagnitude']
+            var rotateSpeed = object['rotateSpeed'];
+            var scaleSpeed = object['scaleSpeed'];
+            var fadeSpeed = object['fadeSpeed'];
+            var origin = object['origin'];
+            var initScale = object['initScale'];
+            var newPosition = origin.clone().add(new Vector3(
+                Math.sin(elapsedTime * moveSpeed),
+                Math.cos(elapsedTime * moveSpeed),
+                0
+            ).multiplyScalar(moveMagnitude));
 
-                object.position.set(newPosition.x, newPosition.y, newPosition.z);
-                object.material.rotation += THREE.Math.DEG2RAD * rotateSpeed * dTime;
-                var newScaleValue = Math.abs(Math.sin(elapsedTime * scaleSpeed)) + 0.8;
-                object.scale.set(initScale.x * newScaleValue, initScale.y * newScaleValue, initScale.z);
-                var newFadeValue = 1-Math.abs(Math.sin(elapsedTime * fadeSpeed));
-                object.material.opacity = newFadeValue;
-            }
+            this.position.set(newPosition.x, newPosition.y, newPosition.z);
+            this.material.rotation += THREE.Math.DEG2RAD * rotateSpeed * dTime;
+            var newScaleValue = Math.abs(Math.sin(elapsedTime * scaleSpeed)) + 0.8;
+            this.scale.set(initScale.x * newScaleValue, initScale.y * newScaleValue, initScale.z);
+            var newFadeValue = 1-Math.abs(Math.sin(elapsedTime * fadeSpeed));
+            this.material.opacity = newFadeValue;
         }
         console.log(virus['fadeSpeed'])
         viruses.push(virus);
@@ -126,8 +126,8 @@ let main = () => {
 
     mainScene.background = new THREE.Color(0.5, 0.5, 0.5)
 
-    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    mainScene.add( light );
+    var light = new THREE.AmbientLight(0x404040); // soft white light
+    mainScene.add(light);
     
     modelLoader.load(
         'assets/moon_base/moon_base.gltf',
@@ -137,12 +137,6 @@ let main = () => {
             var moonBase = object.scene
             moonBase.position.set(0, -700, 1200)
             moonBase.scale.set(250,250,250)
-            // moonBase.children[0].material = new THREE.MeshBasicMaterial({
-            //     color: "rgb(255, 0, 0)"
-            // })
-            // moonBase.children[1].material = new THREE.MeshBasicMaterial({
-            //     color: "rgb(255, 0, 0)"
-            // })
             mainScene.add(moonBase)
         }
     )
@@ -198,7 +192,7 @@ let main = () => {
             resize();
         }
 
-        currentScene.children.filter(x => x.hasProperty('animate')).forEach(element => {
+        currentScene.children.filter(x => x.hasOwnProperty('animate')).forEach(element => {
             element.animate(dTime, elapsedTime);
         });
 
