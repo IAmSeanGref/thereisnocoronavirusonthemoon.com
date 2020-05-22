@@ -18,16 +18,16 @@ let main = () => {
 
     var resized = false;
     window.addEventListener('resize', function() {
-        resized = true
+        resized = true;
     })
 
     function resize() {
-        resized = false
+        resized = false;
         renderer.setSize(window.innerWidth, window.innerHeight);
         
-        const canvas = renderer.domElement
-        camera.aspect = canvas.clientWidth/canvas.clientHeight
-        camera.updateProjectionMatrix()
+        const canvas = renderer.domElement;
+        camera.aspect = canvas.clientWidth/canvas.clientHeight;
+        camera.updateProjectionMatrix();
     }
     
     function onDocumentKeyDown(event) {
@@ -54,27 +54,27 @@ let main = () => {
     var modelLoader = new GLTFLoader();
     var textureLoader = new THREE.TextureLoader();
 
-    var moonSpriteMap = new THREE.TextureLoader().load( "assets/sprites/moon.png" );
-    var moonMaterial = new THREE.SpriteMaterial( { 
+    var moonSpriteMap = new THREE.TextureLoader().load("assets/sprites/moon.png");
+    var moonMaterial = new THREE.SpriteMaterial({ 
         map: moonSpriteMap,
         depthTest: false
-    } );
+    });
 
     
-    var virusSpriteMap = new THREE.TextureLoader().load( "assets/sprites/coronavirus.png" );
-    var virusMaterial = new THREE.SpriteMaterial( { 
+    var virusSpriteMap = new THREE.TextureLoader().load("assets/sprites/coronavirus.png");
+    var virusMaterial = new THREE.SpriteMaterial({ 
         map: virusSpriteMap,
         // depthTest: false,
         transparent: true
-    } );
+    });
 
-    var moon = new THREE.Sprite( moonMaterial );
+    var moon = new THREE.Sprite(moonMaterial);
     moon.scale.set(10000, 10000, 1);
     moon.position.set(0, -5500, 1000);
 
     moon.renderOrder = 999;
     moon.animate = function(dTime, elapsedTime) {
-        this.material.rotation += THREE.Math.DEG2RAD * -1 * dTime
+        this.material.rotation += THREE.Math.DEG2RAD * -1 * dTime;
     }
     mainScene.add(moon);
 
@@ -95,12 +95,12 @@ let main = () => {
             fadeSpeed: Math.random() * 3 + 0.5,
             origin: new Vector3(x, y, z),
             initScale: virusObject.scale.clone(),
-        }
+        };
         virusObject.virus = virus;
         virusObject.animate = function(dTime, elapsedTime) {
             var object = this['virus'];
             var moveSpeed = object['moveSpeed'];
-            var moveMagnitude = object['moveMagnitude']
+            var moveMagnitude = object['moveMagnitude'];
             var rotateSpeed = object['rotateSpeed'];
             var scaleSpeed = object['scaleSpeed'];
             var fadeSpeed = object['fadeSpeed'];
@@ -118,13 +118,13 @@ let main = () => {
             this.scale.set(initScale.x * newScaleValue, initScale.y * newScaleValue, initScale.z);
             var newFadeValue = 1-Math.abs(Math.sin(elapsedTime * fadeSpeed));
             this.material.opacity = newFadeValue;
-        }
+        };
         console.log(virus['fadeSpeed'])
         viruses.push(virus);
         mainScene.add(virusObject);
     }
 
-    mainScene.background = new THREE.Color(0.5, 0.5, 0.5)
+    mainScene.background = new THREE.Color(0.5, 0.5, 0.5);
 
     var light = new THREE.AmbientLight(0x404040); // soft white light
     mainScene.add(light);
@@ -134,12 +134,12 @@ let main = () => {
         function (object) {
             console.log("Loading moon-base complete!");
             console.log(object);
-            var moonBase = object.scene
-            moonBase.position.set(0, -700, 1200)
-            moonBase.scale.set(250,250,250)
-            mainScene.add(moonBase)
+            var moonBase = object.scene;
+            moonBase.position.set(0, -700, 1200);
+            moonBase.scale.set(250,250,250);
+            mainScene.add(moonBase);
         }
-    )
+    );
 
     modelLoader.load(
         'assets/earth_model/13902_Earth_v1_l3.gltf',
@@ -152,15 +152,15 @@ let main = () => {
                     var material = new THREE.MeshBasicMaterial({
                         map: texture
                     });
-                    earth = object.scene.children[0]
+                    earth = object.scene.children[0];
                     earth.material = material;
                     mainScene.add(earth);
-                    earth.position.set(0, 1300, -200)
-                    earth.rotateX(THREE.Math.DEG2RAD * 115)
-                    earth.rotateZ(THREE.Math.DEG2RAD * -55)
-                    earth.rotateX(THREE.Math.DEG2RAD * 15)
+                    earth.position.set(0, 1300, -200);
+                    earth.rotateX(THREE.Math.DEG2RAD * 115);
+                    earth.rotateZ(THREE.Math.DEG2RAD * -55);
+                    earth.rotateX(THREE.Math.DEG2RAD * 15);
                     earth.animate = function(dTime, elapsedTime) {
-                        this.rotateZ(THREE.Math.DEG2RAD * -10 * dTime)
+                        this.rotateZ(THREE.Math.DEG2RAD * -10 * dTime);
                     }
                     currentScene = mainScene;
                 },
@@ -180,11 +180,11 @@ let main = () => {
         }
     );
     
-    camera.position.set(0, 0, 2500)
+    camera.position.set(0, 0, 2500);
     
     let clock = new THREE.Clock(true);
     function animate() {
-        requestAnimationFrame( animate );
+        requestAnimationFrame(animate);
         let dTime = clock.getDelta();
         let elapsedTime = clock.getElapsedTime();
 
