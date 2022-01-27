@@ -27,7 +27,7 @@
   "dependencies": {
     "babel-preset-es2015": "^6.24.1",
     "lodash": "^4.17.15",
-    "three": "^0.115.0",
+    "three": "^0.137.0",
     "three-gltf-loader": "^1.111.0"
   }
 }
